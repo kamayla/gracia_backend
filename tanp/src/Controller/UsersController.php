@@ -2,6 +2,10 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Network\Exception\UnauthorizedException;
+use Cake\Utility\Security;
+use Firebase\JWT\JWT;
+use Cake\Auth\DefaultPasswordHasher;
 
 /**
  * Users Controller
@@ -12,7 +16,31 @@ use App\Controller\AppController;
  */
 class UsersController extends AppController
 {
-
+    public function initialize()
+    {
+        parent::initialize();
+        $this->Auth->allow(['login', 'add']);
+    }
+    public function login()
+    {
+        if ($this->request->is('post')) {
+            $user = $this->Auth->identify();
+            if (!$user) {
+                throw new UnauthorizedException('Invalid email or password');
+            }
+            $this->set([
+                'success' => true,
+                'data' => [
+                    'token' => JWT::encode([
+                        'sub' => $user['id'],
+                        'exp' =>  time() + 3600, // 1 hour
+                    ],
+                    Security::salt())
+                ],
+                '_serialize' => ['success', 'data']
+            ]);
+        }
+    }
     /**
      * Index method
      *
@@ -56,10 +84,14 @@ class UsersController extends AppController
      */
     public function add()
     {
+        $request = $this->request->getData();
         $user = $this->Users->newEntity();
-        dd($this->request->getData());
         if ($this->request->is('post')) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
+            $user = $this->Users->patchEntity($user, [
+                'username' => $request['username'],
+                'email' => $request['email'],
+                'password' => (new DefaultPasswordHasher)->hash($request['password']),
+            ]);
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('The user has been saved.'));
 
