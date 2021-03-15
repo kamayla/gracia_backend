@@ -1,0 +1,51 @@
+version: '3.7'
+
+services:
+  tanp-php:
+    container_name: tanp-php
+    build:
+      context: .
+      dockerfile: Dockerfile.php
+    volumes:
+    - ./tanp:/var/www
+    networks:
+    - tanp
+
+  tanp-nginx:
+    image: nginx
+    container_name: tanp-nginx
+    ports:
+    - 80:80
+    - 443:443
+    volumes:
+    - ./tanp:/var/www
+    - ./nginx_conf/default.conf:/etc/nginx/conf.d/default.conf
+    - ./cert-key:/etc/nginx/ssl
+    depends_on:
+    - tanp-php
+    networks:
+    - tanp
+
+  tanp-db:
+    image: mysql:5.7
+    container_name: tanp-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+    - tanp_mysql_volume:/var/lib/mysql
+    ports:
+    - 4306:3306
+    networks:
+    - tanp
+
+networks:
+  tanp:
+    driver: bridge
+volumes:
+  tanp_mysql_volume:
+    driver: local
