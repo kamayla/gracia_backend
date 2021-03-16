@@ -5,6 +5,8 @@ use App\Controller\AppController;
 use Cake\Network\Exception\UnauthorizedException;
 use Cake\Utility\Security;
 use Firebase\JWT\JWT;
+use Cake\Chronos\Chronos;
+use Cake\ORM\TableRegistry;
 
 /**
  * Users Controller
@@ -15,10 +17,14 @@ use Firebase\JWT\JWT;
  */
 class DearsController extends AppController
 {
+    public $paginate = [
+        'maxLimit' => 10
+    ];
+
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['login', 'register']);
+        $this->Auth->allow([]);
     }
 
     public function store()
@@ -32,17 +38,6 @@ class DearsController extends AppController
                 'age' => $request['age'],
                 'segment' => $request['segment'],
                 'user_id' => $this->Auth->user('id'),
-                'anniversaries' => [
-                    [
-                        'kind' => $request['kind'],
-                        'date' => $request['date']
-                    ]
-                ]
-            ],
-            [
-                'associated' => [
-                    'Anniversaries',
-                ]
             ]);
             if ($this->Dears->save($dear)) {
                 $this->set([
@@ -60,6 +55,21 @@ class DearsController extends AppController
                     '_serialize' => ['success', 'dear', 'errors']
                 ]);
             }
+        }
+    }
+
+    public function list()
+    {
+        if ($this->request->is('get')) {
+            $userId = $this->Auth->user('id');
+            $dears = TableRegistry::getTableLocator()->get('Dears');
+            $query = $dears->find()->contain(['Anniversaries'])->where(['user_id' => $userId]);
+            $paginate = $this->paginate($query);
+            $this->set([
+                'data' => $paginate,
+                'pagination' => $this->request->param('paging')['Dears'],
+                '_serialize' => ['data', 'pagination']
+            ]);
         }
     }
 }

@@ -8,6 +8,7 @@
         "php": ">=5.6",
         "admad/cakephp-jwt-auth": "^2.0",
         "cakephp/cakephp": "3.5.*",
+        "cakephp/chronos": "^1.0.1",
         "cakephp/migrations": "^1.0",
         "cakephp/plugin-installer": "^1.0",
         "friendsofcake/crud": "~4.0",
