@@ -19,8 +19,9 @@ class UsersController extends AppController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['login', 'add']);
+        $this->Auth->allow(['login', 'register']);
     }
+
     public function login()
     {
         if ($this->request->is('post')) {
@@ -33,7 +34,7 @@ class UsersController extends AppController
                 'data' => [
                     'token' => JWT::encode([
                         'sub' => $user['id'],
-                        'exp' =>  time() + 3600, // 1 hour
+                        'exp' =>  null,
                     ],
                     Security::salt())
                 ],
@@ -41,19 +42,16 @@ class UsersController extends AppController
             ]);
         }
     }
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
-    public function index()
-    {
-        $users = $this->paginate($this->Users);
 
-        // $this->set(compact('users'));
+    public function me()
+    {
+        $id = $this->Auth->user('id');
+        $user = $this->Users->get($id, [
+            'contain' => ['Dears', 'Dears.Anniversaries']
+        ]);
         $this->set([
-            'users'=>$users,
-            '_serialize'=> 'users'
+            'user'=> $user,
+            '_serialize'=> 'user'
         ]);
     }
 
@@ -70,7 +68,6 @@ class UsersController extends AppController
             'contain' => []
         ]);
 
-        // $this->set('user', $user);
         $this->set([
             'user'=>$user,
             '_serialize'=> 'user'
@@ -82,7 +79,7 @@ class UsersController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function register()
     {
         $request = $this->request->getData();
         $user = $this->Users->newEntity();
@@ -93,13 +90,26 @@ class UsersController extends AppController
                 'password' => (new DefaultPasswordHasher)->hash($request['password']),
             ]);
             if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+                $this->set([
+                    'success' => true,
+                    'data' => [
+                        'token' => JWT::encode([
+                            'sub' => $user['id'],
+                            'exp' =>  null,
+                        ],
+                        Security::salt())
+                    ],
+                    '_serialize' => ['success', 'data']
+                ]);
+            } else {
+                $this->response->statusCode(400);
+                $this->set([
+                    'success' => false,
+                    'data' => null,
+                    '_serialize' => ['success', 'data']
+                ]);
             }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
         }
-        $this->set(compact('user'));
     }
 
     /**
