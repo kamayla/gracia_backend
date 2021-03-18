@@ -25,7 +25,10 @@ class DearsTable extends Table
         $this->addBehavior('Timestamp');
 
         $this->belongsTo('Users');
-        $this->hasMany('Anniversaries');
+        $this->hasMany('Anniversaries',[
+            'dependent' => true,
+            'cascadeCallbacks' => true,
+        ]);
     }
 
     /**
