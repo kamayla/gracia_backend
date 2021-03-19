@@ -23,7 +23,10 @@ class GetAnniversariesSortByMonthService
     {
         $anniversaries = $this->anniversariesRepository->getSortMonthByUserId($userId);
 
-        return $this->aggregatedByMonth($anniversaries);
+        if (count($anniversaries) > 0) {
+            return $this->aggregatedByMonth($anniversaries);
+        }
+        return [];
     }
 
     /**
