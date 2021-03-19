@@ -7,9 +7,11 @@ use Cake\Chronos\Chronos;
 use Cake\ORM\TableRegistry;
 
 use App\Service\Anniversaries\GetAnniversariesSortByMonthService;
+use App\Repository\AnniversariesRepository;
 
 class AnniversariesController extends AppController
 {
+    private $anniversariesRepository;
     public $paginate = [
         'maxLimit' => 10
     ];
@@ -17,6 +19,7 @@ class AnniversariesController extends AppController
     public function initialize()
     {
         parent::initialize();
+        $this->anniversariesRepository = new AnniversariesRepository();
         $this->Auth->allow([]);
     }
 
@@ -114,10 +117,10 @@ class AnniversariesController extends AppController
         }
     }
 
-    public function listSortByMonth(GetAnniversariesSortByMonthService $service)
+    public function listSortByMonth()
     {
+        $service = new GetAnniversariesSortByMonthService($this->anniversariesRepository);
         $this->request->allowMethod(['get']);
-
         $anniversaries = $service->execute($this->Auth->user('id'));
         $this->set([
             'anniversaries' => $anniversaries,
