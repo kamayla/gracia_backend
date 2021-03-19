@@ -3,9 +3,21 @@ namespace App\Repository;
 
 use Cake\Chronos\Chronos;
 use Cake\ORM\TableRegistry;
+use App\Model\Table\AnniversariesTable;
 
 class AnniversariesRepository
 {
+    /**
+     * @var AnniversariesTable
+     */
+    private $registry;
+
+
+    public function __construct()
+    {
+        $this->registry = TableRegistry::getTableLocator()->get('Anniversaries');
+    }
+
     /**
      * 現在の月を基軸に記念日をソートして返す
      *
@@ -14,8 +26,7 @@ class AnniversariesRepository
      */
     public function getSortMonthByUserId(string $userId): object
     {
-        $anniversaries = TableRegistry::getTableLocator()->get('Anniversaries');
-        $query = $anniversaries->find()->join([
+        $query = $this->registry->find()->join([
             'table' => 'dears',
             'alias' => 'dear',
             'conditions' => 'Anniversaries.dear_id = dear.id'

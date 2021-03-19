@@ -7,6 +7,9 @@ use App\Repository\AnniversariesRepository;
 
 class GetAnniversariesSortByMonthService
 {
+    /**
+     * @var AnniversariesRepository
+     */
     private $anniversariesRepository;
 
     public function __construct(AnniversariesRepository $anniversariesRepository)

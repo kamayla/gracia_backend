@@ -21,7 +21,6 @@ use Cake\Validation\Validator;
  */
 class UsersTable extends Table
 {
-
     /**
      * Initialize method
      *
@@ -61,6 +60,7 @@ class UsersTable extends Table
         $validator
             ->scalar('password')
             ->maxLength('password', 255)
+            ->minLength('password', 6)
             ->requirePresence('password', 'create')
             ->notEmpty('password');
 

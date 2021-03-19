@@ -2,11 +2,10 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-use Cake\Network\Exception\UnauthorizedException;
-use Cake\Utility\Security;
 use Firebase\JWT\JWT;
 use Cake\Chronos\Chronos;
 use Cake\ORM\TableRegistry;
+use App\Repository\DearsRepository;
 
 /**
  * Users Controller
@@ -17,6 +16,11 @@ use Cake\ORM\TableRegistry;
  */
 class DearsController extends AppController
 {
+    /**
+     * @var DearsRepository
+     */
+    private $dearRepository;
+
     public $paginate = [
         'maxLimit' => 10
     ];
@@ -25,34 +29,37 @@ class DearsController extends AppController
     {
         parent::initialize();
         $this->Auth->allow([]);
+        $this->dearRepository = new DearsRepository();
     }
 
     public function store()
     {
         $request = $this->request->getData();
-        $dear = $this->Dears->newEntity();
-        if ($this->request->is('post')) {
-            $dear = $this->Dears->patchEntity($dear, [
-                'name' => $request['name'],
-                'gender' => $request['gender'],
-                'age' => $request['age'],
-                'segment' => $request['segment'],
-                'user_id' => $this->Auth->user('id'),
+
+        $dear = $this->Dears->newEntity([
+            'name' => $request['name'],
+            'gender' => $request['gender'],
+            'age' => $request['age'],
+            'segment' => $request['segment'],
+            'user_id' => $this->Auth->user('id'),
+        ]);
+
+        $errors = $dear->errors();
+
+        if ($errors) {
+            $this->set([
+                'success' => false,
+                'dear' => $dear,
+                'errors' => $errors,
+                '_serialize' => ['success', 'dear', 'errors']
             ]);
-            if ($this->Dears->save($dear)) {
+        } else {
+            if ($this->request->is('post')) {
+                $dear = $this->dearRepository->createDear($dear);
                 $this->set([
                     'success' => true,
                     'dear' => $dear,
                     '_serialize' => ['success', 'dear']
-                ]);
-            } else {
-                $this->response->statusCode(400);
-                $errors = $dear->errors();
-                $this->set([
-                    'success' => false,
-                    'dear' => $dear,
-                    'errors' => $errors,
-                    '_serialize' => ['success', 'dear', 'errors']
                 ]);
             }
         }
