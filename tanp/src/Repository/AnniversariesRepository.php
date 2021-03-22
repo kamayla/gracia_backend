@@ -55,6 +55,12 @@ class AnniversariesRepository
         return $anniversaries;
     }
 
+    /**
+     * 記念日を保存更新
+     *
+     * @param Anniversary $anniversary
+     * @return void
+     */
     public function saveAnniversary(Anniversary $anniversary)
     {
         try {
@@ -69,6 +75,12 @@ class AnniversariesRepository
         }
     }
 
+    /**
+     * 記念日を削除
+     *
+     * @param string $id
+     * @return boolean
+     */
     public function deleteAnniversary(string $id): bool
     {
         try {
@@ -81,6 +93,12 @@ class AnniversariesRepository
         }
     }
 
+    /**
+     * 記念日を大切な人基軸で一覧取得
+     *
+     * @param string $dearId
+     * @return ResultSetInterface
+     */
     public function listByDearId(string $dearId): ResultSetInterface
     {
         $query = $this->registry->find()->where(['dear_id' => $dearId])->order('id', 'desc');

@@ -1,8 +1,6 @@
 <?php
 namespace App\Service\Anniversaries;
 
-use Cake\Chronos\Chronos;
-use Cake\ORM\TableRegistry;
 use App\Repository\AnniversariesRepository;
 
 class GetAnniversariesSortByMonthService

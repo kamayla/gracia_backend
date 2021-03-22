@@ -29,7 +29,7 @@ class DearsRepository
     }
 
     /**
-     * 大切な人を保存する処理
+     * 大切な人を保存更新する処理
      *
      * @param Dear $dear
      * @return Dear|null
@@ -77,6 +77,12 @@ class DearsRepository
         ];
     }
 
+    /**
+     * 大切な人を削除
+     *
+     * @param string $id
+     * @return boolean
+     */
     public function deleteDear(string $id): bool
     {
         try {
