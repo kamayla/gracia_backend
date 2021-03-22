@@ -2,13 +2,13 @@
 namespace App\Repository;
 
 use Cake\ORM\TableRegistry;
-use Cake\Auth\DefaultPasswordHasher;
-use Cake\Chronos\Chronos;
 use App\Model\Entity\User;
 use App\Model\Table\UsersTable;
+use Cake\Log\LogTrait;
 
 class UsersRepository
 {
+    use LogTrait;
     /**
      * @var UsersTable
      */
@@ -46,10 +46,15 @@ class UsersRepository
      */
     public function createUser(User $user): ?User
     {
-        $user = $this->registry->save($user);
-        if ($user) {
-            return $user;
+        try {
+            $user = $this->registry->save($user);
+            if ($user) {
+                return $user;
+            }
+            return null;
+        } catch (\Exception $e) {
+            $this->log($e->getMessage(), 'error');
+            return null;
         }
-        return null;
     }
 }

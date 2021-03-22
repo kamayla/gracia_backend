@@ -75,7 +75,7 @@ class UsersTableTest extends TestCase
         $this->assertSame($expected, $user->errors());
     }
 
-    public function getTestCaseForValidation()
+    public function getTestCaseForValidation(): array
     {
         return [
             '全て空欄' => [

@@ -53,16 +53,16 @@ class UsersRepositoryTest extends TestCase
             'password' => 'a',
             'email' => 'ippei@gmail.com',
         ]);
-        $dear2 = new User([
+        $user2 = new User([
             'username' => '上村一平',
             'password' => 'aaaaaaaa',
             'email' => 'ippei@gmail.com',
         ]);
         $user = $this->usersRepository->createUser($user);
-        $dear2 = $this->usersRepository->createUser($dear2);
+        $user2 = $this->usersRepository->createUser($user2);
         $this->assertSame($user->username, '上村一平');
         $this->assertSame($user->email, 'ippei@gmail.com');
-        $this->assertNull($dear2);
+        $this->assertNull($user2);
     }
 
     public function testGetUserById():void
