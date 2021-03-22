@@ -16,14 +16,11 @@ use App\Repository\DearsRepository;
  */
 class DearsController extends AppController
 {
+    private const PER_PAGE = 10;
     /**
      * @var DearsRepository
      */
     private $dearRepository;
-
-    public $paginate = [
-        'maxLimit' => 10
-    ];
 
     public function initialize()
     {
@@ -32,23 +29,9 @@ class DearsController extends AppController
         $this->dearRepository = new DearsRepository();
     }
 
-    private function validation(array $request): array
-    {
-        $dear = $this->Dears->newEntity([
-            'name' => $request['name'],
-            'gender' => $request['gender'],
-            'age' => $request['age'],
-            'segment' => $request['segment'],
-            'user_id' => $this->Auth->user('id'),
-        ]);
-
-        return $dear->errors();
-    }
-
     public function store()
     {
         $request = $this->request->getData();
-
         $dear = $this->Dears->newEntity([
             'name' => $request['name'],
             'gender' => $request['gender'],
@@ -68,7 +51,7 @@ class DearsController extends AppController
             ]);
         } else {
             if ($this->request->is('post')) {
-                $dear = $this->dearRepository->createDear($dear);
+                $dear = $this->dearRepository->saveDear($dear);
                 $this->set([
                     'success' => true,
                     'dear' => $dear,
@@ -81,7 +64,15 @@ class DearsController extends AppController
     public function edit($id = null)
     {
         $request = $this->request->getData();
-        $errors = $this->validation($request);
+        $dear = $this->Dears->get($id);
+        $dear = $this->Dears->patchEntity($dear, [
+            'name' => $request['name'],
+            'gender' => $request['gender'],
+            'age' => $request['age'],
+            'segment' => $request['segment'],
+            'user_id' => $this->Auth->user('id'),
+        ]);
+        $errors = $dear->errors();
         if ($errors) {
             $this->set([
                 'success' => false,
@@ -90,7 +81,7 @@ class DearsController extends AppController
             ]);
         } else {
             if ($this->request->is(['put'])) {
-                $dear = $this->dearRepository->exitDear($this->Auth->user('id'), $id, $request);
+                $dear = $this->dearRepository->saveDear($dear);
                 if ($dear) {
                     $this->set([
                         'success' => true,
@@ -112,13 +103,14 @@ class DearsController extends AppController
     public function list()
     {
         if ($this->request->is('get')) {
-            $userId = $this->Auth->user('id');
-            $dears = TableRegistry::getTableLocator()->get('Dears');
-            $query = $dears->find()->contain(['Anniversaries'])->where(['user_id' => $userId])->order(['id' => 'desc']);
-            $paginate = $this->paginate($query);
+            $paginate = $this->dearRepository->listDearByPaginate(
+                $this->Auth->user('id'),
+                $this->request->query('page') ?? '1',
+                self::PER_PAGE
+            );
             $this->set([
-                'data' => $paginate,
-                'pagination' => $this->request->param('paging')['Dears'],
+                'data' => $paginate['data'],
+                'pagination' => $paginate['pagination']['Dears'],
                 '_serialize' => ['data', 'pagination']
             ]);
         }

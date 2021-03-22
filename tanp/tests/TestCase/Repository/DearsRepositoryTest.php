@@ -49,7 +49,7 @@ class DearsRepositoryTest extends TestCase
     }
 
     /**
-     * @dataProvider getTestCaseForCreateDear
+     * @dataProvider getTestCaseForSaveDear
      *
      * @param integer|null $user_id
      * @param string|null $name
@@ -59,7 +59,7 @@ class DearsRepositoryTest extends TestCase
      * @param boolean $expected
      * @return void
      */
-    public function testCreateDear(
+    public function testSaveDear(
         ?int $user_id,
         ?string $name,
         ?int $age,
@@ -74,11 +74,11 @@ class DearsRepositoryTest extends TestCase
             'gender' => $gender,
             'segment' => $segment,
         ]);
-        $dear = $this->dearsRepository->createDear($dear);
+        $dear = $this->dearsRepository->saveDear($dear);
         $this->assertSame($expected, $dear instanceof Dear);
     }
 
-    public function getTestCaseForCreateDear(): array
+    public function getTestCaseForSaveDear(): array
     {
         return [
             '全てNull' => [
