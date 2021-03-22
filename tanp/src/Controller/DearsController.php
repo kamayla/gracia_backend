@@ -119,22 +119,19 @@ class DearsController extends AppController
     public function delete($id = null)
     {
         $this->request->allowMethod(['delete']);
-        $dear = $this->Dears->get($id);
-        if ($this->Dears->delete($dear)) {
+        $isDelete = $this->dearRepository->deleteDear($id);
+        if ($isDelete) {
             $this->set([
                 'success' => true,
-                'dear' => $dear,
-                '_serialize' => ['success', 'dear']
+                '_serialize' => ['success']
             ]);
         } else {
             $this->response->statusCode(400);
-                $errors = $dear->errors();
-                $this->set([
-                    'success' => false,
-                    'dear' => $dear,
-                    'errors' => $errors,
-                    '_serialize' => ['success', 'dear', 'errors']
-                ]);
+            $this->set([
+                'success' => false,
+                '_serialize' => ['success']
+            ]);
         }
+
     }
 }

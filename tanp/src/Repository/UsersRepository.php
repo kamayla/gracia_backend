@@ -53,7 +53,7 @@ class UsersRepository
             }
             return null;
         } catch (\Exception $e) {
-            $this->log($e->getMessage(), 'error');
+            $this->log($e, 'error');
             return null;
         }
     }

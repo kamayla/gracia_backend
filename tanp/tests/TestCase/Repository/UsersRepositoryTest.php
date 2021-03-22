@@ -1,5 +1,5 @@
 <?php
-namespace App\Test\TestCase\Model\Table;
+namespace App\Test\TestCase\Repository;
 
 use App\Model\Table\UsersTable;
 use Cake\ORM\TableRegistry;

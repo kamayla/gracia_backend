@@ -40,6 +40,12 @@ class AnniversariesTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
+            ->scalar('dear_id')
+            ->maxLength('dear_id', 11)
+            ->requirePresence('dear_id', 'create')
+            ->notEmpty('dear_id');
+
+        $validator
             ->scalar('kind')
             ->maxLength('kind', 255)
             ->requirePresence('kind', 'create')

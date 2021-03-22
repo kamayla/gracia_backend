@@ -121,7 +121,8 @@ class AnniversariesController extends AppController
     {
         $service = new GetAnniversariesSortByMonthService($this->anniversariesRepository);
         $this->request->allowMethod(['get']);
-        $anniversaries = $service->execute($this->Auth->user('id'));
+        $currentMonth = Chronos::now()->month;
+        $anniversaries = $service->execute($this->Auth->user('id'), $currentMonth);
         $this->set([
             'anniversaries' => $anniversaries,
             '_serialize' => 'anniversaries'

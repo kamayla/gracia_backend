@@ -1,5 +1,5 @@
 <?php
-namespace App\Test\TestCase\Model\Table;
+namespace App\Test\TestCase\Repository;
 
 use App\Model\Table\DearsTable;
 use Cake\ORM\TableRegistry;
@@ -104,5 +104,11 @@ class DearsRepositoryTest extends TestCase
     ): void {
         $paginate = $this->dearsRepository->listDearByPaginate(1, 1, 50);
         $this->assertSame($paginate['pagination']['Dears']['perPage'], count($paginate['data']));
+    }
+
+    public function testDeleteDear(): void
+    {
+        $isDelete = $this->dearsRepository->deleteDear(1);
+        $this->assertTrue($isDelete);
     }
 }

@@ -20,11 +20,12 @@ class GetAnniversariesSortByMonthService
      * 現在の月を開始地点として記念日の日付をソートして返す処理
      *
      * @param string $userId 認証済みのUserのユニークID
+     * @param int $startMonth 開始月
      * @return array
      */
-    public function execute(string $userId): array
+    public function execute(string $userId, int $startMonth): array
     {
-        $anniversaries = $this->anniversariesRepository->getSortMonthByUserId($userId);
+        $anniversaries = $this->anniversariesRepository->getSortMonthByUserId($userId, $startMonth);
 
         if (count($anniversaries) > 0) {
             return $this->aggregatedByMonth($anniversaries);

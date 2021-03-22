@@ -43,7 +43,7 @@ class DearsRepository
             }
             return null;
         } catch (\Exception $e) {
-            $this->log($e->getMessage(), 'error');
+            $this->log($e, 'error');
             return null;
         }
     }
@@ -75,5 +75,17 @@ class DearsRepository
             'data' => $paginate,
             'pagination' => $this->paginator->getPagingParams(),
         ];
+    }
+
+    public function deleteDear(string $id): bool
+    {
+        try {
+            $dear = $this->registry->get($id);
+            $isDelete = $this->registry->delete($dear);
+            return $isDelete;
+        } catch (\Exception $e) {
+            $this->log($e, 'error');
+            return false;
+        }
     }
 }
