@@ -43,7 +43,6 @@ class User extends Entity
         'password'
     ];
 
-    // ミューテーターの _set 以降、password がカラム名
     protected function _setPassword($password)
     {
           return (new DefaultPasswordHasher)->hash($password);
