@@ -1,12 +1,16 @@
 <?php
 namespace App\Repository;
 
-use Cake\Chronos\Chronos;
 use Cake\ORM\TableRegistry;
 use App\Model\Table\AnniversariesTable;
+use App\Model\Entity\Anniversary;
+use Cake\Log\LogTrait;
+use Cake\Datasource\ResultSetInterface;
 
 class AnniversariesRepository
 {
+    use LogTrait;
+
     /**
      * @var AnniversariesTable
      */
@@ -48,6 +52,39 @@ class AnniversariesRepository
                             ->order(['sort_num' => 'asc'])
                             ->all();
 
+        return $anniversaries;
+    }
+
+    public function saveAnniversary(Anniversary $anniversary)
+    {
+        try {
+            $anniversary = $this->registry->save($anniversary);
+            if ($anniversary ) {
+                return $anniversary ;
+            }
+            return null;
+        } catch (\Exception $e) {
+            $this->log($e, 'error');
+            return null;
+        }
+    }
+
+    public function deleteAnniversary(string $id): bool
+    {
+        try {
+            $anniversary = $this->registry->get($id);
+            $isDelete = $this->registry->delete($anniversary);
+            return $isDelete;
+        } catch (\Exception $e) {
+            $this->log($e, 'error');
+            return false;
+        }
+    }
+
+    public function listByDearId(string $dearId): ResultSetInterface
+    {
+        $query = $this->registry->find()->where(['dear_id' => $dearId])->order('id', 'desc');
+        $anniversaries = $query->all();
         return $anniversaries;
     }
 }
