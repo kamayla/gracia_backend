@@ -43,26 +43,50 @@ class UsersRepositoryTest extends TestCase
      */
     public function tearDown(): void
     {
+        unset($this->usersRepository);
         parent::tearDown();
     }
 
-    public function testCreateUser(): void
-    {
+    /**
+     * @dataProvider getTestCaseForCreateUser
+     *
+     * @param string $username
+     * @param string $password
+     * @param string $email
+     * @param bool $expected
+     * @return void
+     */
+    public function testCreateUser(
+        ?string $username,
+        ?string $password,
+        ?string $email,
+        bool $expected
+    ): void {
         $user = new User([
-            'username' => '上村一平',
-            'password' => 'a',
-            'email' => 'ippei@gmail.com',
-        ]);
-        $user2 = new User([
-            'username' => '上村一平',
-            'password' => 'aaaaaaaa',
-            'email' => 'ippei@gmail.com',
+            'username' => $username,
+            'password' => $password,
+            'email' => $email,
         ]);
         $user = $this->usersRepository->createUser($user);
-        $user2 = $this->usersRepository->createUser($user2);
-        $this->assertSame($user->username, '上村一平');
-        $this->assertSame($user->email, 'ippei@gmail.com');
-        $this->assertNull($user2);
+        $this->assertSame($expected, $user instanceof User);
+    }
+
+    public function getTestCaseForCreateUser(): array
+    {
+        return [
+            '全てNull' => [
+                'username' => null,
+                'password' => null,
+                'email' => null,
+                'expected' => false,
+            ],
+            '正常系' => [
+                'username' => '上村一平',
+                'password' => 'hogehogehoge',
+                'email' => 'ippei_kamimura@icloud.com',
+                'expected' => true,
+            ],
+        ];
     }
 
     public function testGetUserById():void

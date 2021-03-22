@@ -32,6 +32,19 @@ class DearsController extends AppController
         $this->dearRepository = new DearsRepository();
     }
 
+    private function validation(array $request): array
+    {
+        $dear = $this->Dears->newEntity([
+            'name' => $request['name'],
+            'gender' => $request['gender'],
+            'age' => $request['age'],
+            'segment' => $request['segment'],
+            'user_id' => $this->Auth->user('id'),
+        ]);
+
+        return $dear->errors();
+    }
+
     public function store()
     {
         $request = $this->request->getData();
@@ -68,32 +81,30 @@ class DearsController extends AppController
     public function edit($id = null)
     {
         $request = $this->request->getData();
-        $dear = $this->Dears->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['put'])) {
-            $dear = $this->Dears->patchEntity($dear, [
-                'name' => $request['name'],
-                'gender' => $request['gender'],
-                'age' => $request['age'],
-                'segment' => $request['segment'],
-                'user_id' => $this->Auth->user('id'),
+        $errors = $this->validation($request);
+        if ($errors) {
+            $this->set([
+                'success' => false,
+                'errors' => $errors,
+                '_serialize' => ['success', 'dear', 'errors']
             ]);
-            if ($this->Dears->save($dear)) {
-                $this->set([
-                    'success' => true,
-                    'dear' => $dear,
-                    '_serialize' => ['success', 'dear']
-                ]);
-            } else {
-                $this->response->statusCode(400);
-                $errors = $dear->errors();
-                $this->set([
-                    'success' => false,
-                    'dear' => $dear,
-                    'errors' => $errors,
-                    '_serialize' => ['success', 'dear', 'errors']
-                ]);
+        } else {
+            if ($this->request->is(['put'])) {
+                $dear = $this->dearRepository->exitDear($this->Auth->user('id'), $id, $request);
+                if ($dear) {
+                    $this->set([
+                        'success' => true,
+                        'dear' => $dear,
+                        '_serialize' => ['success', 'dear']
+                    ]);
+                } else {
+                    $this->response->statusCode(400);
+                    $this->set([
+                        'success' => false,
+                        'dear' => null,
+                        '_serialize' => ['success', 'dear']
+                    ]);
+                }
             }
         }
     }

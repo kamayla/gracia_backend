@@ -44,6 +44,12 @@ class DearsTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
+            ->scalar('user_id')
+            ->maxLength('user_id', 11)
+            ->requirePresence('user_id', 'create')
+            ->notEmpty('user_id');
+
+        $validator
             ->scalar('name')
             ->maxLength('name', 255)
             ->requirePresence('name', 'create')

@@ -94,7 +94,17 @@ class UsersTableTest extends TestCase
                     ],
                 ],
             ],
-            '全て正しく入力' => [
+            'パスワードが６文字に満たない' => [
+                'username' => 'ippei',
+                'email' => 'ik@gmail.com',
+                'password' => 'abc',
+                'expected' => [
+                    'password' => [
+                        'minLength' => 'The provided value is invalid',
+                    ],
+                ],
+            ],
+            '正常系' => [
                 'username' => '上村　一平',
                 'email' => 'ippei_kamimura@icloud.com',
                 'password' => 'tanppass',

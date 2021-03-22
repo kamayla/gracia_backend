@@ -34,4 +34,21 @@ class DearsRepository
             return null;
         }
     }
+
+    public function exitDear(
+        string $userId,
+        string $dearId,
+        array $request
+    ): Dear {
+        $dear = $this->registry->get($dearId);
+        $dear = $this->registry->patchEntity($dear, [
+            'name' => $request['name'],
+            'gender' => $request['gender'],
+            'age' => $request['age'],
+            'segment' => $request['segment'],
+            'user_id' => $userId,
+        ]);
+        $dear = $this->registry->save($dear);
+        return $dear;
+    }
 }

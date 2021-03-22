@@ -44,6 +44,7 @@ class DearsRepositoryTest extends TestCase
      */
     public function tearDown(): void
     {
+        unset($this->dearsRepository);
         parent::tearDown();
     }
 
@@ -51,19 +52,19 @@ class DearsRepositoryTest extends TestCase
      * @dataProvider getTestCaseForCreateDear
      *
      * @param integer|null $user_id
-     * @param string $name
+     * @param string|null $name
      * @param integer|null $age
-     * @param string $gender
-     * @param string $segment
-     * @param bool $expected
+     * @param string|null $gender
+     * @param string|null $segment
+     * @param boolean $expected
      * @return void
      */
     public function testCreateDear(
         ?int $user_id,
-        string $name,
+        ?string $name,
         ?int $age,
-        string $gender,
-        string $segment,
+        ?string $gender,
+        ?string $segment,
         bool $expected
     ): void {
         $dear = new Dear([
@@ -80,15 +81,15 @@ class DearsRepositoryTest extends TestCase
     public function getTestCaseForCreateDear(): array
     {
         return [
-            '全て空欄' => [
+            '全てNull' => [
                 'user_id' => null,
-                'name' => '',
+                'name' => null,
                 'age' => null,
-                'gender' => '',
-                'segment' => '',
+                'gender' => null,
+                'segment' => null,
                 'expected' => false,
             ],
-            '正常ケース' => [
+            '正常系' => [
                 'user_id' => 1,
                 'name' => '木村さん',
                 'age' => 44,
