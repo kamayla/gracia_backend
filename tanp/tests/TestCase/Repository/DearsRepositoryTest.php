@@ -99,4 +99,10 @@ class DearsRepositoryTest extends TestCase
             ],
         ];
     }
+
+    public function testListDearByPaginate(
+    ): void {
+        $paginate = $this->dearsRepository->listDearByPaginate(1, 1, 50);
+        $this->assertSame($paginate['pagination']['Dears']['perPage'], count($paginate['data']));
+    }
 }

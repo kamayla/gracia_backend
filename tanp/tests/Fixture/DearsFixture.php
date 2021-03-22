@@ -42,18 +42,19 @@ class DearsFixture extends TestFixture
      */
     public function init()
     {
-        $this->records = [
-            [
-                'id' => 1,
+        $faker = \Faker\Factory::create();
+        foreach (range(1, 100) as $i) {
+            $this->records[] = [
+                'id' => $i,
                 'user_id' => 1,
-                'name' => 'ゆきこ',
+                'name' => $faker->name(),
                 'gender' => '女性',
-                'age' => 47,
+                'age' => 24,
                 'segment' => '彼女',
                 'created' => '2021-03-15 18:00:48',
                 'modified' => '2021-03-15 18:00:48'
-            ],
-        ];
+            ];
+        }
         parent::init();
     }
 }

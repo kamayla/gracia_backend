@@ -41,16 +41,17 @@ class UsersFixture extends TestFixture
      */
     public function init()
     {
-        $this->records = [
-            [
-                'id' => 1,
-                'username' => 'Lorem ipsum dolor sit amet',
-                'password' => 'Lorem ipsum dolor sit amet',
-                'email' => 'Lorem ipsum dolor sit amet',
+        $faker = \Faker\Factory::create();
+        foreach (range(1, 100) as $i) {
+            $this->records[] = [
+                'id' => $i,
+                'username' => $faker->name(),
+                'password' => $faker->password(),
+                'email' => $faker->email(),
                 'created' => '2021-03-15 18:00:48',
                 'modified' => '2021-03-15 18:00:48'
-            ],
-        ];
+            ];
+        }
         parent::init();
     }
 }
