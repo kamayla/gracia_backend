@@ -33,7 +33,7 @@ services:
       TZ: "Asia/Tokyo"
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
-      - tanp_mysql_volume:/var/lib/mysql
+      - tanp_mysql_prod_volume:/var/lib/mysql
     ports:
       - 4306:3306
     networks:
@@ -41,3 +41,6 @@ services:
 networks:
   tanp-prod:
     driver: bridge
+volumes:
+  tanp_mysql_prod_volume:
+    driver: local
