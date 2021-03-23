@@ -35,7 +35,7 @@ services:
     volumes:
       - tanp_mysql_prod_volume:/var/lib/mysql
     ports:
-      - 4306:3306
+      - 3306:3306
     networks:
       - tanp-prod
 networks:
