@@ -52,7 +52,7 @@ use Cake\Utility\Security;
 if (!env('APP_NAME') && file_exists(CONFIG . '.env')) {
     $dotenv = new \josegonzalez\Dotenv\Loader([CONFIG . '.env']);
     $dotenv->parse()
-        ->putenv()
+        ->putenv(true)
         ->toEnv()
         ->toServer();
 }
@@ -217,9 +217,4 @@ if (Configure::read('debug')) {
 
 Plugin::load('ADmad/JwtAuth');
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, GET, PUT, PATCH, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: *');
-if (($_SERVER["REQUEST_METHOD"] ?? 'GET') == 'OPTIONS') {
-    exit(0);
-}
+Plugin::load('Cors', ['bootstrap' => true, 'routes' => false]);

@@ -21,3 +21,5 @@ ENV PATH $PATH:/composer/vendor/bin
 WORKDIR /var/www
 
 RUN composer install
+
+RUN chmod 777 -R logs tmp
