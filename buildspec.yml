@@ -48,7 +48,7 @@ phases:
       - |
         set -e
         IMGDEF_JSON=${IMGDEF_JSON}$(printf '{"name":"%s", "imageUri": "%s"},' tanp-php-prod ${ECR_IMAGE_PHP_URI}:${COMMIT_HASH})
-        docker tag laravel-study ${ECR_IMAGE_PHP_URI}:${COMMIT_HASH}
+        docker tag tanp-php-prod ${ECR_IMAGE_PHP_URI}:${COMMIT_HASH}
         docker push ${ECR_IMAGE_PHP_URI}:${COMMIT_HASH}
 
       ##### imagedefinitions.jsonの書き込み ###################################
