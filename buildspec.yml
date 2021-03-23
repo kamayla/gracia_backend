@@ -45,7 +45,9 @@ phases:
       ##### dockerイメージのビルド ###################################
       # Dockerfileが更新されていたらイメージをビルドしてECRへpush、されていなければlatestをpull
       - docker-compose -f docker-compose.prod.yaml up --build -d tanp-php-prod
-      - make build-test
+      ##### テストを実行 ###################################
+      # phpunitテストを実行
+      - docker exec -it tanp-php-prod bash -c './vendor/bin/phpunit'
       - |
         set -e
         IMGDEF_JSON=${IMGDEF_JSON}$(printf '{"name":"%s", "imageUri": "%s"},' tanp-php-prod ${ECR_IMAGE_PHP_URI}:${COMMIT_HASH})
