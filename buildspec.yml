@@ -47,6 +47,7 @@ phases:
       - docker-compose -f docker-compose.prod.yaml up --build -d tanp-php-prod
       ##### テストを実行 ###################################
       # phpunitテストを実行
+      - docker exec -it tanp-php-prod bash -c 'bin/cake migrations migrate -c test'
       - docker exec -it tanp-php-prod bash -c './vendor/bin/phpunit'
       - |
         set -e
