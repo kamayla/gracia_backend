@@ -43,7 +43,6 @@ phases:
       - docker-compose -f docker-compose.prod.yaml up -d --build tanp-db
 
       ##### dockerイメージのビルド ###################################
-      # Dockerfileが更新されていたらイメージをビルドしてECRへpush、されていなければlatestをpull
       - docker-compose -f docker-compose.prod.yaml up --build -d tanp-php-prod
       ##### テストを実行 ###################################
       # phpunitテストを実行
