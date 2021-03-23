@@ -1,4 +1,8 @@
 version: 0.2
+env:
+  parameter-store:
+    DOCKER_USER: dockerhub-user
+    DOCKER_TOKEN: dockerhub-token
 phases:
   install:
     runtime-versions:
@@ -8,6 +12,8 @@ phases:
       ##### dockerリポジトリへのログイン ###################################
       # ECRのリポジトリにログイン
       - $(aws ecr get-login --no-include-email --region ${AWS_REGION})
+      ##### Docker Hubへのログイン #####################################
+      - echo $DOCKER_TOKEN | docker login -u $DOCKER_USER --password-stdin
 
       ##### 環境変数の定義 ###################################
       # APP_NAME, APP_ENV はcodeBuildの環境変数を設定している。
