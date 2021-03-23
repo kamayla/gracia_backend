@@ -44,7 +44,7 @@ $cakeDescription = 'CakePHP: the rapid development PHP framework';
     <?= $this->Html->css('home.css') ?>
     <link href="https://fonts.googleapis.com/css?family=Raleway:500i|Roboto:300,400,700|Roboto+Mono" rel="stylesheet">
 </head>
-<body class="home" style="background: red;">
+<body class="home">
 
 <header class="row">
     <div class="header-image"><?= $this->Html->image('cake.logo.svg') ?></div>
