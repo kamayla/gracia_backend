@@ -1,0 +1,56 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      docker: 19
+  pre_build:
+    commands:
+      ##### dockerリポジトリへのログイン ###################################
+      # ECRのリポジトリにログイン
+      - $(aws ecr get-login --no-include-email --region ${AWS_REGION})
+
+      ##### 環境変数の定義 ###################################
+      # APP_NAME, APP_ENV はcodeBuildの環境変数を設定している。
+      # envディレクティブで設定していないのはスクリプトで定義している部分があるため。
+      # AWSのアカウントIDを$CODEBUILD_BUILD_ARNから取得
+      - echo ${CODEBUILD_BUILD_ARN}
+      - OLDIFS=$IFS && IFS=':' && set -- ${CODEBUILD_BUILD_ARN} && AWS_ACCOUNT_ID=$5 && IFS=$OLDIFS
+      - ROOT_DIR=`pwd`
+      - ECR_IMAGE_PHP_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/tanp-php-prod
+      # gitのコミットハッシュを使ってdockerイメージ
+      - COMMIT_HASH=`echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-9`
+      # 下記のDockerfileが変更されていたらイメージをビルドしてECRへpushする
+      - IMGDEF_JSON_FILE=${ROOT_DIR}/imagedefinitions.json
+      # 環境変数初期値表示
+      - |
+        echo ">>> ENVs ->"
+        echo ">>>     AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID}"
+        echo ">>>     ROOT_DIR: ${ROOT_DIR}"
+        echo ">>>     ECR_IMAGE_PHP_URI: ${ECR_IMAGE_PHP_URI}"
+        echo ">>>     COMMIT_HASH: ${COMMIT_HASH}"
+        echo ">>>     IMGDEF_JSON_FILE: ${IMGDEF_JSON_FILE}"
+
+  build:
+    commands:
+      - IMGDEF_JSON=""
+      - cd ${ROOT_DIR}; echo ">>> [dir] `pwd`"
+      # - docker-compose -f docker-compose.prod.yaml up -d --build study-db
+
+      ##### dockerイメージのビルド ###################################
+      # Dockerfileが更新されていたらイメージをビルドしてECRへpush、されていなければlatestをpull
+      - docker-compose -f docker-compose.prod.yaml up --build -d tanp-php-prod
+      - |
+        set -e
+        IMGDEF_JSON=${IMGDEF_JSON}$(printf '{"name":"%s", "imageUri": "%s"},' tanp-php-prod ${ECR_IMAGE_PHP_URI}:${COMMIT_HASH})
+        docker tag laravel-study ${ECR_IMAGE_PHP_URI}:${COMMIT_HASH}
+        docker push ${ECR_IMAGE_PHP_URI}:${COMMIT_HASH}
+
+      ##### imagedefinitions.jsonの書き込み ###################################
+      - IMGDEF_JSON="["${IMGDEF_JSON:0:${#IMGDEF_JSON}-1}"]"
+      - echo ${IMGDEF_JSON}
+      - echo ${IMGDEF_JSON} > ${IMGDEF_JSON_FILE}
+artifacts:
+  files:
+    - "**/*"
+  discard-paths: no
+  base-directory: ${ROOT_DIR}

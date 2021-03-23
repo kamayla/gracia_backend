@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   tanp-php-prod:
-    image: 016992890397.dkr.ecr.ap-northeast-1.amazonaws.com/tanp-php-prod:1.0.7
+    image: tanp-php-prod
     container_name: tanp-php-prod
     build:
       context: .
@@ -11,7 +11,7 @@ services:
       - tanp-prod
 
   tanp-nginx-prod:
-    image: 016992890397.dkr.ecr.ap-northeast-1.amazonaws.com/tanp-nginx-prod:1.0.4
+    image: tanp-nginx-prod
     build:
       context: .
       dockerfile: Dockerfile.nginx
@@ -20,6 +20,22 @@ services:
       - 80:80
     depends_on:
       - tanp-php-prod
+    networks:
+      - tanp-prod
+  tanp-db:
+    image: mysql:5.7
+    container_name: tanp-db-prod
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test_database
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+      TZ: "Asia/Tokyo"
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - tanp_mysql_volume:/var/lib/mysql
+    ports:
+      - 4306:3306
     networks:
       - tanp-prod
 networks:
